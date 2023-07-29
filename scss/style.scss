@@ -1,0 +1,387 @@
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+  
+}
+:root {
+  --container-width: 1200px;
+  --container-padding: 15px;
+  --max-column: 12;
+  --column-space: 20px;
+  --spacer: 1rem;
+}
+// Mixins
+
+// Mixin tạo ra các thuộc tính flexbox
+// Nhận vào 2 tham số: thuộc tính và giá trị
+
+@mixin flex($property, $map) {
+  @each $key, $value in $map {
+    .#{$property}-#{$key} {
+      #{$property}: $value;
+    }
+  }
+}
+
+// Mixin tạo ra các thuộc tính margin và padding cho row và col
+// Nhận vào 2 tham số: key và value
+
+@mixin gutter($key, $value) {
+  &.g-#{$key} {
+    margin: 0 calc(-1 * var(--column-space) / 2);
+    --column-space: #{$value};
+    > [class^="col-"] {
+      padding: 0 calc(var(--column-space) / 2);
+      margin-bottom: var(--column-space);
+      --column-space-gutter: #{$value};
+    }
+  }
+}
+
+// Mixin tạo ra các thuộc tính d-none
+// Nhận vào 2 tham số: key và breakpoint(nếu có)
+
+@mixin d-none($key: null, $breakpoint: null) {
+  @if $breakpoint == null {
+    .d-none {
+      display: none;
+    }
+  } @else {
+    @media screen and (min-width: $breakpoint) {
+      .d-#{$key}-none {
+        display: none;
+      }
+    }
+  }
+}
+
+// Mixin tạo ra các thuộc tính cho col
+// Nhận vào 2 tham số: cột và breakpoint(nếu có)
+
+@mixin column($i, $media: null) {
+  @if $media == null {
+    .col-#{$i} {
+      --column-number: #{$i};
+    }
+  } @else {
+    --column-number: #{$i};
+  }
+}
+
+// Mixin tạo ra các thuộc tính cho col theo breakpoint
+// Nhận vào 2 tham số: cột và breakpoint
+
+@mixin column-breakpoint($key, $value) {
+  @media screen and (min-width: $value) {
+    @for $i from 1 through $columns {
+      .col-#{$key}-#{$i} {
+        @include column($i, $key);
+      }
+    }
+  }
+}
+
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+$flex-value: (
+  start: flex-start,
+  center: center,
+  end: flex-end,
+);
+$flex-attribute: (justify-content, align-items);
+
+// Khởi tạo các thuộc tính flexbox cho row và col
+
+@each $attribute in $flex-attribute {
+  @include flex(#{$attribute}, $flex-value);
+}
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 0 calc(-1 * var(--column-space) / 2);
+  $gutters: (
+    0: 0,
+    1: calc(0.25 * var(--spacer)),
+    2: calc(0.5 * var(--spacer)),
+    3: calc(1 * var(--spacer)),
+    4: calc(1.5 * var(--spacer)),
+    5: calc(3 * var(--spacer)),
+  );
+
+  // Tạo ra các thuộc tính margin và padding cho row và col
+
+  @each $key, $value in $gutters {
+    @include gutter($key, $value);
+  }
+  [class^="col-"] {
+    --column-width: calc(100% / (var(--max-column) / var(--column-number)));
+    flex-basis: var(--column-width);
+    max-width: var(--column-width);
+    padding: 0 calc(var(--column-space) / 2);
+    margin-bottom: var(--column-space);
+  }
+}
+$columns: 12;
+$breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+);
+
+// Khởi tạo các thuộc tính cho col theo breakpoint
+
+@mixin media-breakpoints($map) {
+  @include d-none();
+  @for $i from 1 through $columns {
+    // Tạo ra các thuộc tính cho col chưa có breakpoint
+    @include column($i);
+  }
+  @each $key, $value in $map {
+    // Tạo ra các thuộc tính cho col, d-none theo breakpoint
+    @include d-none($key, $value);
+    @include column-breakpoint($key, $value);
+  }
+}
+@include media-breakpoints($breakpoints);
+$color-white:white;
+
+.landing{
+  
+  background: url(https://hoanganf8.github.io/htmlcss_project02/image/landing-background.jpg) no-repeat 0;
+  background-size: cover;
+  height: 100%;
+  top: 0px;
+  position: absolute;
+  width: 100%;
+  .landing-page{
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    height: 80%;
+    .landing-info{
+ 
+      p{
+        color:$color-white;
+      }
+      h2{
+        font-family: 'Rajdhani', sans-serif;    
+        color:$color-white;
+        text-align: center;
+      }
+      h1{
+        font-family: 'Titillium Web', sans-serif;
+        font-size: 100px;
+        color:$color-white;
+      }
+      > * {
+        text-align: center;
+      }
+      svg{
+        width: 10%;
+      }
+    } 
+    .landing-login{
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    
+      margin-right: 15%;
+       margin-left: 15%;
+      margin-top: 10%;
+      padding: 2rem 4rem ;
+      box-sizing: border-box;
+      background-color: $color-white;
+      height: 100%;
+      border-radius: 10px;
+      img{
+        position: absolute;
+        top: -55px;
+        left: -77px;
+      }
+      h3{
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+   }  
+  }
+}
+
+  .container{
+  
+   font-family: 'Rajdhani', sans-serif;    
+  }
+  .did-floating-label-content { 
+    position:relative; 
+    margin-bottom:20px; 
+
+  }
+  .did-floating-label {
+    color:#adafca; 
+    font-size:14px;
+    font-weight:600;
+    font-family: 'Rajdhani', sans-serif;    
+    position:absolute;
+    pointer-events:none;
+    left:15px;
+    top:50%;
+    transform: translateY(-50%);
+    padding:0 5px;
+    background:$color-white;
+    transition:0.4s ease all; 
+    -moz-transition:0.4s ease all; 
+    -webkit-transition:0.4s ease all;
+  }
+  .did-floating-input {
+    font-size:12px;
+    display:block;
+    width:100%;
+    height:55px;
+    padding: 0 20px;
+    background:$color-white;
+    color: #616161;
+    border: 1px solid #a4a4a48d;
+    border-radius: 10px;
+    box-sizing: border-box;
+    &:focus{
+      outline:none;
+      border: 1px solid #2049de;
+      ~ .did-floating-label{
+        top:0px;
+        font-size:12px;
+        
+       
+      }
+    }
+  }
+  
+ 
+  
+  .did-floating-input:not(:placeholder-shown) ~ .did-floating-label {
+    top:0px;
+    font-size:12px;
+  }
+  
+  
+  .input-group {
+    display: flex;
+    .did-floating-input{
+      border-radius:0 4px 4px 0;
+      border-left:0;
+      padding-left:0;
+    }
+  }
+  .btn{
+    margin-top: 2rem;
+  }
+  .btn button{
+    width:100% ;
+    height: 55px;
+    border-radius: 10px;
+    border: none;
+    background-color:  #615dfa;
+    color:$color-white;
+  }
+  .input-group-append {
+    display:flex;
+    align-items:center;
+  /* margin-left:-1px; */
+  }
+  .input-group-text {
+      display: flex;
+      align-items: center;
+      font-weight: 400;
+      height:34px;
+      color: #323840;
+      padding: 0 5px 0 20px;
+      font-size:12px;
+      text-align: center;
+      white-space: nowrap;
+      border: 1px solid #3D85D8;
+      border-radius: 4px 0 0 4px;
+      border-right:none;
+  }
+  .did-floating-label-checkbox{
+    display: flex;
+    justify-content: space-between;
+    input{
+      display: none;
+    }
+    label{
+      display: flex;
+      align-items: center;
+      span{
+        align-items: center;
+        border: 1px solid gray;
+        display: inline-flex;
+        height: 22px;
+        border-radius: 5px;
+        
+
+        i{
+          font-size: 26px;
+          visibility: hidden;
+        }
+       
+        
+      }
+      p{
+        margin-left: .6rem;
+      }
+
+    }
+     
+    input:checked ~ label{
+      span{
+        border: 1px solid transparent;
+      }
+      i {
+      visibility:visible;
+       
+    }
+    } 
+    .forgot-password{
+      display: flex;
+      align-items: center;
+    }
+    
+  }
+ 
+  //-----//
+  $colors: (1: rgb(57, 38, 234),2: rgb(89, 183, 246),3: rgb(212, 0, 255),4: rgb(255, 0, 0));
+  
+  
+
+  .media-social{
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    i{
+      font-size: 15px;
+      padding: 13px 15px;
+      color:$color-white;
+    }
+    @each $color-name, $color-value in $colors {  
+      div:nth-child(#{$color-name}) {
+        background-color: $color-value;
+        border-radius: 8px;
+      }
+    }
+    
+    > *:hover{
+     transform: translateY(-3px);
+     transition: all .1s ease-in;
+    }
+  }
+  .tillte p{
+    text-align: center;
+    margin: 1rem 0rem;
+  }
